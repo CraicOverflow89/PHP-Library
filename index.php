@@ -3,7 +3,7 @@
 	// NOTE: annotations required
 	class Stream extends ArrayObject
 	{
-	    private $data;
+		private $data;
 
 		// NOTE: annotations required
 		public function __construct($data = array())

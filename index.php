@@ -1,12 +1,12 @@
 <?php
 
 	/*
-		write fold, reduce and window methods
+		write asIterable and window methods
 		finish annotations
 		type checks and exceptions
-		return types for methods
 		separate files into index, Stream and test
 		should the Stream class work for both standard and associative arrays (method overloading to support both)?
+		would sequence be a better name for this?
 	*/
 
 	// NOTE: annotations required
@@ -20,6 +20,94 @@
 		{
 			// NOTE: check for associative array?
 			$this -> data = $data;
+		}
+
+		/**
+		 * Determines if all pairs match a predicate
+		 *
+		 * @param Callable $logic ($k: String, $v: Any) -> Boolean
+		 * @return Boolean
+		 * @throws Exception if $logic does not return boolean
+		 */
+		public function all(Callable $logic) : Boolean
+		{
+			// Iterate Pairs
+			foreach($this -> data as $k => $v)
+			{
+				// Invoke Predicate
+				$pairMatch = $logic($k, $v);
+
+				// Invalid Return
+				if(!is_bool($pairMatch)) throw new \Exception('Logic must return boolean.');
+
+				// Match Failure
+				if(!$pairMatch) return false;
+			}
+
+			// Match Success
+			return true;
+		}
+
+		/**
+		 * Determines if any pairs match a predicate
+		 *
+		 * @param Callable $logic ($k: String, $v: Any) -> Boolean
+		 * @return Boolean
+		 * @throws Exception if $logic does not return boolean
+		 */
+		public function any(Callable $logic) : Boolean
+		{
+			// NOTE: could make $logic optional (without simply returns size > 0)
+
+			// Iterate Pairs
+			foreach($this -> data as $k => $v)
+			{
+				// Invoke Predicate
+				$pairMatch = $logic($k, $v);
+
+				// Invalid Return
+				if(!is_bool($pairMatch)) throw new \Exception('Logic must return boolean.');
+
+				// Match Success
+				if($pairMatch) return true;
+			}
+
+			// Match Failure
+			return false;
+		}
+
+		/**
+		 * Creates an array of streams of max size
+		 *
+		 * @param Int $size maximum Stream size
+		 * @return Array<Stream>
+		 * @throws Exception if $size is fewer than one
+		 */
+		public function chunked(Int $size) : Array
+		{
+			// Validate Size
+			if($size < 1) throw new \Exception('Size must be at least one.');
+
+			// Define Result
+			$result = [[]];
+
+			// Iterate Pairs
+			$pos = 0;
+			foreach($this -> data as $k => $v)
+			{
+				// Next Chunk
+				if(count($result[$pos]) == $size)
+				{
+					$pos ++;
+					$result[$pos] = [];
+				}
+
+				// Append Pair
+				$result[$pos][$k] = $v;
+			}
+
+			// Return Result
+			return $result;
 		}
 
 		/**
@@ -77,6 +165,17 @@
 		}
 
 		/**
+		 * Performs logic against pairs
+		 *
+		 * @param Callable $logic ($k: String, $v: Any)
+		 */
+		public function forEach(Callable $logic)
+		{
+			// Iterate Pairs
+			foreach($this -> data as $k => $v) $logic($k, $v);
+		}
+
+		/**
 		 * Maps pairs on logic
 		 *
 		 * @param Callable $logic ($k: String, $v: Any) -> Any
@@ -88,6 +187,47 @@
 			foreach($this -> data as $k => $v) $this -> data[$k] = $logic($k, $v);
 
 			// NOTE: should we check that $logic returns something or is null acceptable?
+
+			// Return Stream
+			return $this;
+		}
+
+		/**
+		 * Determines if no pairs match a predicate
+		 *
+		 * @param Callable $logic ($k: String, $v: Any) -> Boolean
+		 * @return Boolean
+		 * @throws Exception if $logic does not return boolean
+		 */
+		public function none(Callable $logic) : Boolean
+		{
+			// Iterate Pairs
+			foreach($this -> data as $k => $v)
+			{
+				// Invoke Predicate
+				$pairMatch = $logic($k, $v);
+
+				// Invalid Return
+				if(!is_bool($pairMatch)) throw new \Exception('Logic must return boolean.');
+
+				// Match Failure
+				if($pairMatch) return false;
+			}
+
+			// Match Success
+			return true;
+		}
+
+		/**
+		 * Performs logic against pairs and returns stream
+		 *
+		 * @param Callable $logic ($k: String, $v: Any)
+		 * @return Stream
+		 */
+		public function onEach(Callable $logic)
+		{
+			// Iterate Pairs
+			foreach($this -> data as $k => $v) $logic($k, $v);
 
 			// Return Stream
 			return $this;
@@ -178,8 +318,8 @@
 		return new Stream($data);
 	}
 
-	// Execute Test
-	print_r(Stream([
+	// Test 1
+	/*print_r(Stream([
 		'name' => 'Jamie',
 		'age'  => 29,
 		'lang' => ['PHP', 'Kotlin', 'Coldfusion']
@@ -192,6 +332,13 @@
 	}) -> map(function($k, $v)
 	{
 		return 'k = ' . $k . ', v = ' . $v;
-	}) -> toMap());
+	}) -> toMap());*/
+
+	// Test 2
+	print_r(Stream([
+		'name' => 'Jamie',
+		'age'  => 29,
+		'lang' => ['PHP', 'Kotlin', 'Coldfusion']
+	]) -> chunked(2));
 
 ?>

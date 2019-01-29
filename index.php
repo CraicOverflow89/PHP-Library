@@ -1,14 +1,24 @@
 <?php
 
+	/*
+		write fold, reduce and window methods
+		finish annotations
+		type checks and exceptions
+		return types for methods
+		separate files into index, Stream and test
+		should the Stream class work for both standard and associative arrays (method overloading to support both)?
+	*/
+
 	// NOTE: annotations required
 	class Stream extends ArrayObject
 	{
+		// NOTE: annotations here?
 		private $data;
 
 		// NOTE: annotations required
-		public function __construct($data = array())
+		public function __construct(Array $data = array())
 		{
-			// NOTE: type checks (must be associative array)
+			// NOTE: check for associative array?
 			$this -> data = $data;
 		}
 
@@ -19,7 +29,7 @@
 		 * @return Stream
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function filter($logic)
+		public function filter(Callable $logic) : Stream
 		{
 			// Define Result
 			$result = [];
@@ -45,12 +55,34 @@
 		}
 
 		/**
+		 * Folds the stream into a single value
+		 *
+		 * @param Any $initial value to start
+		 * @param Callable $logic ($result: Any, $k: String, $v: Any) -> Any
+		 * @return Any
+		 */
+		public function fold(Any $initial, Callable $logic) : Any
+		{
+			// Define Result
+			$result = $initial;
+
+			// Iterate Pairs
+			foreach($this -> data as $k => $v) $result = $logic($result, $k, $v);
+
+			// NOTE: should we type check the return against initial?
+			//       we're not bothering with $result: Any<T> for now
+
+			// Return Result
+			return $result;
+		}
+
+		/**
 		 * Maps pairs on logic
 		 *
 		 * @param Callable $logic ($k: String, $v: Any) -> Any
 		 * @return Stream
 		 */
-		public function map($logic)
+		public function map(Callable $logic) : Stream
 		{
 			// Iterate Pairs
 			foreach($this -> data as $k => $v) $this -> data[$k] = $logic($k, $v);
@@ -61,10 +93,22 @@
 			return $this;
 		}
 
-		// NOTE: annotations required
-		public function reduce($logic)
+		/**
+		 * Reduces the stream into a single value
+		 *
+		 * @param Callable $logic ($result: Any, $k: String, $v: Any) -> Any
+		 * @return Any
+		 */
+		public function reduce(Callable $logic) : Any
 		{
-			// NOTE: write this one (and the alternative where initial value is supplied)
+			// Define Result
+			$result = null;
+
+			// Iterate Pairs
+			foreach($this -> data as $k => $v) $result = $logic($result, $k, $v);
+
+			// Return Result
+			return $result;
 		}
 
 		/**
@@ -74,7 +118,7 @@
 		 * @return Stream
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function reject($logic)
+		public function reject(Callable $logic) : Stream
 		{
 			// Define Result
 			$result = [];
@@ -104,8 +148,9 @@
 		 *
 		 * @return String of pairs as JSON
 		 */
-		public function toJSON()
+		public function toJSON() : String
 		{
+			// NOTE: this annotation obviously only works for associate arrays
 			return json_encode($this -> data);
 		}
 
@@ -114,8 +159,9 @@
 		 *
 		 * @return Array of pairs
 		 */
-		public function toMap()
+		public function toMap() : Array
 		{
+			// NOTE: this annotation and method name obviously only work for associate arrays
 			return $this -> data;
 		}
 
@@ -125,10 +171,10 @@
 	 * Creates a stream
 	 *
 	 * @param Array $data pairs
+	 * @return Stream
 	 */
-	function Stream($data = array())
+	function Stream(Array $data = array()) : Stream
 	{
-		// NOTE: $data should be typed?
 		return new Stream($data);
 	}
 

@@ -97,6 +97,37 @@
 		}
 
 		/**
+		 * Creates a generator for the stream
+		 *
+		 * @return Array [isDone: Boolean, next: Any]
+		 */
+		public function asIterable() : Array
+		{
+			// Instantiate Position
+			$pos = 0;
+
+			// Return Proxy
+			return [
+				'isDone' => function() use ($pos)
+				{
+					// Return Completion
+					return $pos > count($this -> data) - 1;
+				},
+				'next' => function() use ($pos)
+				{
+					// Invalid Position
+					if($pos > count($this -> data)) throw new \Exception('Generator has reached end of stream.');
+
+					// Increment Position
+					$pos ++;
+
+					// Return Data
+					return $this -> data[$pos];
+				}
+			];
+		}
+
+		/**
 		 * Creates an array of streams of max size
 		 *
 		 * @param Int $size maximum Stream size
@@ -389,7 +420,7 @@
 		public function __construct(array $dataMap)
 		{
 			// Type Logic
-			$this -> typeData = (function()
+			$this -> typeData = (function() use ($dataMap)
 			{
 				// Validate Size
 				if(!count($dataMap)) throw new \Exception('Missing struct data.');

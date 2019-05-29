@@ -4,22 +4,41 @@
 		write asIterable and window methods
 		finish annotations
 		type checks and exceptions
-		separate files into index, Stream and test
 		should the Stream class work for both standard and associative arrays (method overloading to support both)?
-		would sequence be a better name for this?
 	*/
 
 	// NOTE: annotations required
 	class Stream extends ArrayObject
 	{
-		// NOTE: annotations here?
+		/** @var array $data */
 		private $data;
 
-		// NOTE: annotations required
+		/**
+		 * Constructs a Stream
+		 *
+		 * @param Array $data pairs
+		 * @return Stream
+		 */
 		public function __construct(Array $data = array())
 		{
 			// NOTE: check for associative array?
 			$this -> data = $data;
+		}
+
+		/**
+		 * Adds a pair to the stream
+		 *
+		 * @param String $key the key
+		 * @param Any $value the value
+		 * @return Stream
+		 */
+		public function add(string $key, $value) : Stream
+		{
+			// Append Pair
+			$this -> data[$key] = $value;
+
+			// Return Stream
+			return $this;
 		}
 
 		/**
@@ -29,7 +48,7 @@
 		 * @return Boolean
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function all(Callable $logic) : Boolean
+		public function all(Callable $logic) : bool
 		{
 			// Iterate Pairs
 			foreach($this -> data as $k => $v)
@@ -51,13 +70,14 @@
 		/**
 		 * Determines if any pairs match a predicate
 		 *
-		 * @param Callable $logic ($k: String, $v: Any) -> Boolean
+		 * @param Callable $logic ($k: String, $v: Any) -> Boolean | null
 		 * @return Boolean
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function any(Callable $logic) : Boolean
+		public function any(Callable $logic = null) : bool
 		{
-			// NOTE: could make $logic optional (without simply returns size > 0)
+			// No Logic
+			if($logic == null) return !!count($this -> data);
 
 			// Iterate Pairs
 			foreach($this -> data as $k => $v)
@@ -157,9 +177,6 @@
 			// Iterate Pairs
 			foreach($this -> data as $k => $v) $result = $logic($result, $k, $v);
 
-			// NOTE: should we type check the return against initial?
-			//       we're not bothering with $result: Any<T> for now
-
 			// Return Result
 			return $result;
 		}
@@ -186,8 +203,6 @@
 			// Iterate Pairs
 			foreach($this -> data as $k => $v) $this -> data[$k] = $logic($k, $v);
 
-			// NOTE: should we check that $logic returns something or is null acceptable?
-
 			// Return Stream
 			return $this;
 		}
@@ -199,7 +214,7 @@
 		 * @return Boolean
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function none(Callable $logic) : Boolean
+		public function none(Callable $logic) : bool
 		{
 			// Iterate Pairs
 			foreach($this -> data as $k => $v)
@@ -216,6 +231,35 @@
 
 			// Match Success
 			return true;
+		}
+
+		/**
+		 * Overrides method for array get syntactic sugar
+		 *
+		 * @param Any $index the key (string)
+		 * @return Any
+		 * @throws Exception if $index does not exist as a key in the stream
+		 */
+		public function offsetGet($index)
+		{
+			// Invalid Key
+			if(!array_key_exists($index, $this -> data)) throw new \Exception('Key does not exist in the stream.');
+
+			// Return Value
+			return $this -> data[$index];
+		}
+
+		/**
+		 * Overrides method for array add syntactic sugar
+		 *
+		 * @param Any $index the key (string)
+		 * @param Any $newval the value
+		 * @return Stream
+		 */
+		public function offsetSet($index, $newval) : Stream
+		{
+			// Invoke Add
+			return $this -> add($index, $newval);
 		}
 
 		/**
@@ -284,24 +328,32 @@
 		}
 
 		/**
+		 * Converts the stream to an array
+		 *
+		 * @return Array
+		 */
+		public function toArray() : Array
+		{
+			return $this -> data;
+		}
+
+		/**
 		 * Converts the stream to JSON
 		 *
-		 * @return String of pairs as JSON
+		 * @return JSON
 		 */
 		public function toJSON() : String
 		{
-			// NOTE: this annotation obviously only works for associate arrays
 			return json_encode($this -> data);
 		}
 
 		/**
 		 * Converts the stream to a map
 		 *
-		 * @return Array of pairs
+		 * @return Array
 		 */
 		public function toMap() : Array
 		{
-			// NOTE: this annotation and method name obviously only work for associate arrays
 			return $this -> data;
 		}
 
@@ -318,27 +370,100 @@
 		return new Stream($data);
 	}
 
-	// Test 1
-	/*print_r(Stream([
-		'name' => 'Jamie',
-		'age'  => 29,
-		'lang' => ['PHP', 'Kotlin', 'Coldfusion']
-	]) -> reject(function($k, $v)
+	class Struct
 	{
-		return $k == 'age';
-	}) -> filter(function($k, $v)
-	{
-		return $v == 'Jamie';
-	}) -> map(function($k, $v)
-	{
-		return 'k = ' . $k . ', v = ' . $v;
-	}) -> toMap());*/
+		/** @var array $dataMap */
+		private $dataMap;
 
-	// Test 2
-	print_r(Stream([
-		'name' => 'Jamie',
-		'age'  => 29,
-		'lang' => ['PHP', 'Kotlin', 'Coldfusion']
-	]) -> chunked(2));
+		/** @var array $typeData */
+		private $typeData;
+
+		/**
+		 * Constructs a Struct
+		 *
+		 * @param Array $data pairs
+		 * @return Struct
+		 * @throws Exception if $dataMap contains no data
+		 * @throws Exception if $dataMap contains invalid data
+		 */
+		public function __construct(array $dataMap)
+		{
+			// Type Logic
+			$this -> typeData = (function()
+			{
+				// Type Logic
+				$typeMap = Stream([
+					'boolean' => "is_bool",
+					'integer' => "is_int",
+					'number' => "is_numeric",
+					'string' => "is_string"
+				]) -> map(function($type, $method)
+				{
+					// Validation Logic
+					return function($it) use ($method)
+					{
+						// Validate Type
+						return $method($it);
+					};
+				}) -> toArray();
+
+				// Return Proxy
+				return [
+					'exists' => function($type) use ($typeMap)
+					{
+						return array_key_exists($type, $typeMap);
+					},
+					'validate' => function($type, $value) use ($typeMap)
+					{
+						return $typeMap[$type]($value);
+					}
+				];
+			})();
+			// Do not want to perform this operation each time we construct (static?)
+
+			// Validate Size
+			if(!count($dataMap)) throw new \Exception('Missing struct data.');
+
+			// Validate Data
+			$this -> dataMap = Stream($dataMap) -> onEach(function($name, $type)
+			{
+				// Invalid Type
+				if(!$this -> typeData['exists']($type)) throw new \Exception('Invalid struct data.');
+			}) -> toArray();
+		}
+
+		/**
+		 * Validates a map
+		 *
+		 * @param Array $value pairs
+		 * @return Boolean
+		 */
+		public function validate(array $value): bool
+		{
+			// Validate Data
+			return Stream($this -> dataMap) -> all(function($name, $type) use ($value, $typeData)
+			{
+				// Data Missing
+				if(!array_key_exists($name, $value)) return false;
+
+				// Validate Type
+				return $this -> typeData['validate']($type, $name);
+			});
+		}
+
+	}
+
+	/**
+	 * Creates a struct
+	 *
+	 * @param Array $dataMap pairs
+	 * @return Struct
+	 * @throws Exception if $dataMap contains no data
+	 * @throws Exception if $dataMap contains invalid data
+	 */
+	function Struct(array $dataMap) : Struct
+	{
+		return new Struct($dataMap);
+	}
 
 ?>

@@ -391,6 +391,9 @@
 			// Type Logic
 			$this -> typeData = (function()
 			{
+				// Validate Size
+				if(!count($dataMap)) throw new \Exception('Missing struct data.');
+
 				// Type Logic
 				$typeMap = Stream([
 					'boolean' => "is_bool",
@@ -420,9 +423,6 @@
 				];
 			})();
 			// Do not want to perform this operation each time we construct (static?)
-
-			// Validate Size
-			if(!count($dataMap)) throw new \Exception('Missing struct data.');
 
 			// Validate Data
 			$this -> dataMap = Stream($dataMap) -> onEach(function($name, $type)

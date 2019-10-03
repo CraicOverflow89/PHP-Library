@@ -17,11 +17,15 @@
 		 * Constructs a Stream
 		 *
 		 * @param Array $data pairs
+		 * @throws Exception if $data is not an associative array of key/value pairs
 		 * @return Stream
 		 */
 		public function __construct(Array $data = array()) {
 
-			// NOTE: check for associative array?
+			// Invalid Array
+			if(array_keys($data) === range(0, count($data) - 1)) throw new \Exception('Data must contains key/value pairs.');
+
+			// Create Stream
 			$this -> data = $data;
 		}
 
@@ -390,6 +394,7 @@
 	 * Creates a stream
 	 *
 	 * @param Array $data pairs
+	 * @throws Exception if $data is not an associative array of key/value pairs
 	 * @return Stream
 	 */
 	function Stream(Array $data = array()) : Stream {

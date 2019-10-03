@@ -8,8 +8,8 @@
 	*/
 
 	// NOTE: annotations required
-	class Stream extends ArrayObject
-	{
+	class Stream extends ArrayObject {
+
 		/** @var array $data */
 		private $data;
 
@@ -19,8 +19,8 @@
 		 * @param Array $data pairs
 		 * @return Stream
 		 */
-		public function __construct(Array $data = array())
-		{
+		public function __construct(Array $data = array()) {
+
 			// NOTE: check for associative array?
 			$this -> data = $data;
 		}
@@ -32,8 +32,8 @@
 		 * @param Any $value the value
 		 * @return Stream
 		 */
-		public function add(string $key, $value) : Stream
-		{
+		public function add(string $key, $value) : Stream {
+
 			// Append Pair
 			$this -> data[$key] = $value;
 
@@ -48,11 +48,11 @@
 		 * @return Boolean
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function all(Callable $logic) : bool
-		{
+		public function all(Callable $logic) : bool {
+
 			// Iterate Pairs
-			foreach($this -> data as $k => $v)
-			{
+			foreach($this -> data as $k => $v) {
+
 				// Invoke Predicate
 				$pairMatch = $logic($k, $v);
 
@@ -74,14 +74,14 @@
 		 * @return Boolean
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function any(Callable $logic = null) : bool
-		{
+		public function any(Callable $logic = null) : bool {
+
 			// No Logic
 			if($logic == null) return !!count($this -> data);
 
 			// Iterate Pairs
-			foreach($this -> data as $k => $v)
-			{
+			foreach($this -> data as $k => $v) {
+
 				// Invoke Predicate
 				$pairMatch = $logic($k, $v);
 
@@ -101,20 +101,20 @@
 		 *
 		 * @return Array [isDone: Boolean, next: Any]
 		 */
-		public function asIterable() : Array
-		{
+		public function asIterable() : Array {
+
 			// Instantiate Position
 			$pos = 0;
 
 			// Return Proxy
 			return [
-				'isDone' => function() use ($pos)
-				{
+				'isDone' => function() use ($pos) {
+
 					// Return Completion
 					return $pos > count($this -> data) - 1;
 				},
-				'next' => function() use ($pos)
-				{
+				'next' => function() use ($pos) {
+
 					// Invalid Position
 					if($pos > count($this -> data)) throw new \Exception('Generator has reached end of stream.');
 
@@ -134,8 +134,8 @@
 		 * @return Array<Stream>
 		 * @throws Exception if $size is fewer than one
 		 */
-		public function chunked(Int $size) : Array
-		{
+		public function chunked(Int $size) : Array {
+
 			// Validate Size
 			if($size < 1) throw new \Exception('Size must be at least one.');
 
@@ -144,11 +144,10 @@
 
 			// Iterate Pairs
 			$pos = 0;
-			foreach($this -> data as $k => $v)
-			{
+			foreach($this -> data as $k => $v) {
+
 				// Next Chunk
-				if(count($result[$pos]) == $size)
-				{
+				if(count($result[$pos]) == $size) {
 					$pos ++;
 					$result[$pos] = [];
 				}
@@ -168,14 +167,14 @@
 		 * @return Stream
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function filter(Callable $logic) : Stream
-		{
+		public function filter(Callable $logic) : Stream {
+
 			// Define Result
 			$result = [];
 
 			// Iterate Pairs
-			foreach($this -> data as $k => $v)
-			{
+			foreach($this -> data as $k => $v) {
+
 				// Invoke Predicate
 				$pairInclude = $logic($k, $v);
 
@@ -200,8 +199,8 @@
 		 * @param Callable $logic ($result: Any, $k: String, $v: Any) -> Any
 		 * @return Any
 		 */
-		public function fold(Any $initial, Callable $logic) : Any
-		{
+		public function fold(Any $initial, Callable $logic) : Any {
+
 			// Define Result
 			$result = $initial;
 
@@ -217,8 +216,8 @@
 		 *
 		 * @param Callable $logic ($k: String, $v: Any)
 		 */
-		public function forEach(Callable $logic)
-		{
+		public function forEach(Callable $logic) {
+
 			// Iterate Pairs
 			foreach($this -> data as $k => $v) $logic($k, $v);
 		}
@@ -229,8 +228,8 @@
 		 * @param Callable $logic ($k: String, $v: Any) -> Any
 		 * @return Stream
 		 */
-		public function map(Callable $logic) : Stream
-		{
+		public function map(Callable $logic) : Stream {
+
 			// Iterate Pairs
 			foreach($this -> data as $k => $v) $this -> data[$k] = $logic($k, $v);
 
@@ -245,11 +244,11 @@
 		 * @return Boolean
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function none(Callable $logic) : bool
-		{
+		public function none(Callable $logic) : bool {
+
 			// Iterate Pairs
-			foreach($this -> data as $k => $v)
-			{
+			foreach($this -> data as $k => $v) {
+
 				// Invoke Predicate
 				$pairMatch = $logic($k, $v);
 
@@ -271,8 +270,8 @@
 		 * @return Any
 		 * @throws Exception if $index does not exist as a key in the stream
 		 */
-		public function offsetGet($index)
-		{
+		public function offsetGet($index) {
+
 			// Invalid Key
 			if(!array_key_exists($index, $this -> data)) throw new \Exception('Key does not exist in the stream.');
 
@@ -287,8 +286,8 @@
 		 * @param Any $newval the value
 		 * @return Stream
 		 */
-		public function offsetSet($index, $newval) : Stream
-		{
+		public function offsetSet($index, $newval) : Stream {
+
 			// Invoke Add
 			return $this -> add($index, $newval);
 		}
@@ -299,8 +298,8 @@
 		 * @param Callable $logic ($k: String, $v: Any)
 		 * @return Stream
 		 */
-		public function onEach(Callable $logic)
-		{
+		public function onEach(Callable $logic) {
+
 			// Iterate Pairs
 			foreach($this -> data as $k => $v) $logic($k, $v);
 
@@ -314,8 +313,8 @@
 		 * @param Callable $logic ($result: Any, $k: String, $v: Any) -> Any
 		 * @return Any
 		 */
-		public function reduce(Callable $logic) : Any
-		{
+		public function reduce(Callable $logic) : Any {
+
 			// Define Result
 			$result = null;
 
@@ -333,14 +332,14 @@
 		 * @return Stream
 		 * @throws Exception if $logic does not return boolean
 		 */
-		public function reject(Callable $logic) : Stream
-		{
+		public function reject(Callable $logic) : Stream {
+
 			// Define Result
 			$result = [];
 
 			// Iterate Pairs
-			foreach($this -> data as $k => $v)
-			{
+			foreach($this -> data as $k => $v) {
+
 				// Invoke Predicate
 				$pairInclude = $logic($k, $v);
 
@@ -363,8 +362,7 @@
 		 *
 		 * @return Array
 		 */
-		public function toArray() : Array
-		{
+		public function toArray() : Array {
 			return $this -> data;
 		}
 
@@ -373,8 +371,7 @@
 		 *
 		 * @return JSON
 		 */
-		public function toJSON() : String
-		{
+		public function toJSON() : String {
 			return json_encode($this -> data);
 		}
 
@@ -383,8 +380,7 @@
 		 *
 		 * @return Array
 		 */
-		public function toMap() : Array
-		{
+		public function toMap() : Array {
 			return $this -> data;
 		}
 
@@ -396,13 +392,13 @@
 	 * @param Array $data pairs
 	 * @return Stream
 	 */
-	function Stream(Array $data = array()) : Stream
-	{
+	function Stream(Array $data = array()) : Stream {
 		return new Stream($data);
 	}
 
-	class Struct
-	{
+	// NOTE: annotations required
+	class Struct {
+
 		/** @var array $dataMap */
 		private $dataMap;
 
@@ -417,11 +413,11 @@
 		 * @throws Exception if $dataMap contains no data
 		 * @throws Exception if $dataMap contains invalid data
 		 */
-		public function __construct(array $dataMap)
-		{
+		public function __construct(array $dataMap) {
+
 			// Type Logic
-			$this -> typeData = (function() use ($dataMap)
-			{
+			$this -> typeData = (function() use ($dataMap) {
+
 				// Validate Size
 				if(!count($dataMap)) throw new \Exception('Missing struct data.');
 
@@ -431,11 +427,11 @@
 					'integer' => "is_int",
 					'number' => "is_numeric",
 					'string' => "is_string"
-				]) -> map(function($type, $method)
-				{
+				]) -> map(function($type, $method) {
+
 					// Validation Logic
-					return function($it) use ($method)
-					{
+					return function($it) use ($method) {
+
 						// Validate Type
 						return $method($it);
 					};
@@ -443,12 +439,10 @@
 
 				// Return Proxy
 				return [
-					'exists' => function($type) use ($typeMap)
-					{
+					'exists' => function($type) use ($typeMap) {
 						return array_key_exists($type, $typeMap);
 					},
-					'validate' => function($type, $value) use ($typeMap)
-					{
+					'validate' => function($type, $value) use ($typeMap) {
 						return $typeMap[$type]($value);
 					}
 				];
@@ -456,8 +450,8 @@
 			// Do not want to perform this operation each time we construct (static?)
 
 			// Validate Data
-			$this -> dataMap = Stream($dataMap) -> onEach(function($name, $type)
-			{
+			$this -> dataMap = Stream($dataMap) -> onEach(function($name, $type) {
+
 				// Invalid Type
 				if(!$this -> typeData['exists']($type)) throw new \Exception('Invalid struct data.');
 			}) -> toArray();
@@ -469,11 +463,11 @@
 		 * @param Array $value pairs
 		 * @return Boolean
 		 */
-		public function validate(array $value): bool
-		{
+		public function validate(array $value): bool {
+
 			// Validate Data
-			return Stream($this -> dataMap) -> all(function($name, $type) use ($value, $typeData)
-			{
+			return Stream($this -> dataMap) -> all(function($name, $type) use ($value, $typeData) {
+
 				// Data Missing
 				if(!array_key_exists($name, $value)) return false;
 
@@ -492,8 +486,7 @@
 	 * @throws Exception if $dataMap contains no data
 	 * @throws Exception if $dataMap contains invalid data
 	 */
-	function Struct(array $dataMap) : Struct
-	{
+	function Struct(array $dataMap) : Struct {
 		return new Struct($dataMap);
 	}
 

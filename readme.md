@@ -14,38 +14,38 @@ Streams contain a sequence of data and provides access to chainable, functional 
 ```
 // Create Stream
 Stream([
-	'apple' => ['colour' => ['green', 'red'], 'isFruit' => true],
-	'cabbage' => ['colour' => ['green'], 'isFruit' => false],
-	'carrot' => ['colour' => ['orange'], 'isFruit' => true],
-	'cucumber' => ['colour' => ['green'], 'isFruit' => false],
-	'orange' => ['colour' => ['orange'], 'isFruit' => true],
-	'pineapple' => ['colour' => ['yellow', 'brown'], 'isFruit' => true]
+    'apple' => ['colour' => ['green', 'red'], 'isFruit' => true],
+    'cabbage' => ['colour' => ['green'], 'isFruit' => false],
+    'carrot' => ['colour' => ['orange'], 'isFruit' => true],
+    'cucumber' => ['colour' => ['green'], 'isFruit' => false],
+    'orange' => ['colour' => ['orange'], 'isFruit' => true],
+    'pineapple' => ['colour' => ['yellow', 'brown'], 'isFruit' => true]
 ])
 
 // Add Tomato
 -> add('tomato', [
-	'colour' => ['red', 'yellow', 'green'],
-	'isFruit' => true
+    'colour' => ['red', 'yellow', 'green'],
+    'isFruit' => true
 ])
 
 // Reject Orange
 -> reject(function($_, $v) {
-	return in_array('orange', $v['colour']);
+    return in_array('orange', $v['colour']);
 })
 
 // Filter Fruit
 -> filter(function($_, $v) {
-	return $v['isFruit'];
+    return $v['isFruit'];
 })
 
 // Map Colours
 -> map(function($_, $v) {
-	return implode(", ", $v['colour']);
+    return implode(", ", $v['colour']);
 })
 
 // Print Each
 -> forEach(function($k, $v) {
-	print("$k = $v \n");
+    print("$k = $v \n");
 });
 
 /* prints the following;

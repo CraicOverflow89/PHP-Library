@@ -5,7 +5,18 @@ Playing around with some new basic classes for FP development in PHP.
 
 ### Features
 
-Functional programming with typical methods via `Stream` class and type safe objects with `Struct` class.
+Functional programming with typical methods via `Stream` class and type-safe objects with `Struct` class.
+Various small classes and helpers will be developed over time.
+
+### Pair Class
+
+Very simple way of storing two values.
+
+```
+// Create Pair
+$font = Pair("Inconsolata", "monospace");
+print($font -> first . " is type " . $font -> second);
+```
 
 ### Stream Class
 

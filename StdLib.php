@@ -4,8 +4,41 @@
 		write asIterable and window methods
 		finish annotations
 		type checks and exceptions
-		should the Stream class work for both standard and associative arrays (method overloading to support both)?
 	*/
+
+	// NOTE: annotations required
+	final class Pair {
+
+		/** @var any $first */
+		public $first;
+
+		/** @var any $second */
+		public $second;
+
+		/**
+		 * Constructs a Pair
+		 *
+		 * @param Any $first value
+		 * @param Any $second value
+		 * @return Pair
+		 */
+		public function __construct($first, $second) {
+			$this -> first = $first;
+			$this -> second = $second;
+		}
+
+	}
+
+	/**
+	 * Creates a Pair
+	 *
+	 * @param Any $first value
+	 * @param Any $second value
+	 * @return Pair
+	 */
+	function Pair($first, $second) : Pair {
+		return new Pair($first, $second);
+	}
 
 	// NOTE: annotations required
 	class Stream extends ArrayObject {
@@ -468,7 +501,7 @@
 		 * @param Array $value pairs
 		 * @return Boolean
 		 */
-		public function validate(array $value): bool {
+		public function validate(array $value) : bool {
 
 			// Validate Data
 			return Stream($this -> dataMap) -> all(function($name, $type) use ($value, $typeData) {

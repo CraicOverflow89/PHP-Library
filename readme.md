@@ -14,7 +14,7 @@ Very simple way of storing two values.
 
 ```
 // Create Pair
-$font = Pair("Inconsolata", "monospace");
+$font = \StdLib\Pair("Inconsolata", "monospace");
 print($font -> first . " is type " . $font -> second);
 ```
 
@@ -24,7 +24,7 @@ Streams contain a sequence of data and provides access to chainable, functional 
 
 ```
 // Create Stream
-Stream([
+\StdLib\Stream([
     'apple' => ['colour' => ['green', 'red'], 'isFruit' => true],
     'cabbage' => ['colour' => ['green'], 'isFruit' => false],
     'carrot' => ['colour' => ['orange'], 'isFruit' => true],
@@ -69,6 +69,5 @@ Stream([
 ### Tasks
 
  - readme needs example of `Struct` class
- - use namespace
  - write tests for everything
  - structure classes and tests (dirs)

@@ -1,4 +1,5 @@
 <?php
+	namespace StdLib;
 
 	/*
 		write asIterable and window methods
@@ -41,7 +42,7 @@
 	}
 
 	// NOTE: annotations required
-	class Stream extends ArrayObject {
+	class Stream extends \ArrayObject {
 
 		/** @var array $data */
 		private $data;

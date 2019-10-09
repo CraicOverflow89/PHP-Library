@@ -65,3 +65,10 @@ Stream([
    tomato = red, yellow, green 
 */
 ```
+
+### Tasks
+
+ - readme needs example of `Struct` class
+ - use namespace
+ - write tests for everything
+ - structure classes and tests (dirs)

@@ -7,6 +7,17 @@
 		type checks and exceptions
 	*/
 
+	/**
+	 * Determines if a string is valid JSON
+	 *
+	 * @param String $value the string to check
+	 * @return Boolean
+	 */
+	function isJSON($value) {
+		json_decode($value);
+		return (json_last_error() == JSON_ERROR_NONE);
+	}
+
 	// NOTE: annotations required
 	final class Pair {
 
@@ -452,11 +463,16 @@
 	/**
 	 * Creates a stream
 	 *
-	 * @param Array $data pairs
-	 * @throws Exception if $data is not an associative array of key/value pairs
+	 * @param Any $data associative array of key/value pairs or JSON string
+	 * @throws Exception if $data is not an associative array of key/value pairs or valid JSON
 	 * @return Stream
 	 */
-	function Stream(Array $data = array()) : Stream {
+	function Stream($data = array()) : Stream {
+
+		// Decode JSON
+		if(isJSON($data)) $data = json_decode($data);
+
+		// Return Stream
 		return new Stream($data);
 	}
 

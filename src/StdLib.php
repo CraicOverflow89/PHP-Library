@@ -470,7 +470,7 @@
 	function Stream($data = array()) : Stream {
 
 		// Decode JSON
-		if(isJSON($data)) $data = json_decode($data);
+		if(isJSON($data)) $data = json_decode($data, true);
 
 		// Return Stream
 		return new Stream($data);

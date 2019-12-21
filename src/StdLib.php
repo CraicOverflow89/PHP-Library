@@ -345,6 +345,31 @@
 			return $this;
 		}
 
+		public function partition(Callable $logic) : Pair {
+
+			// Define Results
+			$result = [
+				"first" => [],
+				"second" => []
+			];
+
+			// Iterate Pairs
+			foreach($this -> data as $k => $v) {
+
+				// Invoke Predicate
+				$pairPartition = $logic($k, $v);
+
+				// Invalid Return
+				if(!is_bool($pairPartition)) throw new \Exception('Logic must return boolean.');
+
+				// Include Pair
+				$result[$pairPartition === true ? "first" : "second"][$k] = $v;
+			}
+
+			// Return Result
+			return Pair($result["first"], $result["second"]);
+		}
+
 		/**
 		 * Reduces the stream into a single value
 		 *

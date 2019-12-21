@@ -1,12 +1,6 @@
 <?php
 	namespace StdLib;
 
-	/*
-		write asIterable and window methods
-		finish annotations
-		type checks and exceptions
-	*/
-
 	/**
 	 * Determines if a string is valid JSON
 	 *
@@ -18,7 +12,11 @@
 		return (json_last_error() == JSON_ERROR_NONE);
 	}
 
-	// NOTE: annotations required
+	/**
+	 * Pair
+	 *
+	 * @author craicoverflow89
+	 */
 	final class Pair {
 
 		/** @var any $first */
@@ -52,7 +50,11 @@
 		return new Pair($first, $second);
 	}
 
-	// NOTE: annotations required
+	/**
+	 * Pair
+	 *
+	 * @author craicoverflow89
+	 */
 	class Stream extends \ArrayObject {
 
 		/** @var array $data */
@@ -476,7 +478,11 @@
 		return new Stream($data);
 	}
 
-	// NOTE: annotations required
+	/**
+	 * Pair
+	 *
+	 * @author craicoverflow89
+	 */
 	class Struct {
 
 		/** @var array $dataMap */

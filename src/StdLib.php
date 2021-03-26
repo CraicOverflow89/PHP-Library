@@ -51,7 +51,7 @@
 	}
 
 	/**
-	 * Pair
+	 * Stream
 	 *
 	 * @author craicoverflow89
 	 */
@@ -463,7 +463,7 @@
 	}
 
 	/**
-	 * Creates a stream
+	 * Creates a Stream
 	 *
 	 * @param Any $data associative array of key/value pairs or JSON string
 	 * @throws Exception if $data is not an associative array of key/value pairs or valid JSON
